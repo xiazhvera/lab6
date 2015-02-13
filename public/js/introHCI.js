@@ -9,6 +9,8 @@ $(document).ready(function() {
  * Function that is called when the document is ready.
  */
 function initializePage() {
+	//$('.project a').click(addProjectDetails);
+
 	$('.project a').click(addProjectDetails);
 
 	$('#colorBtn').click(randomizeColors);
@@ -25,8 +27,10 @@ function addProjectDetails(e) {
 	var projectID = $(this).closest('.project').attr('id');
 	// get rid of 'project' from the front of the id 'project3'
 	var idNumber = projectID.substr('project'.length);
+	var url = "/project/" + idNumber;
+	console.log(url);
+	$.get(url, addProject);
 
-	console.log("User clicked on project " + idNumber);
 }
 
 /*
@@ -34,5 +38,39 @@ function addProjectDetails(e) {
  * and apply it
  */
 function randomizeColors(e) {
+	$.get("/palette", addColor);
+
 	console.log("User clicked on color button");
 }
+
+/**
+ *  Callback using JSON result
+ */
+ 
+ function addProject(result){
+	console.log(result);
+	var projectHTML = 
+		'<img src="' + result['image'] + '" class="detailsImage" >' +
+		'<p>' + result['title'] + '</p>' +
+		'<p><small>' + result['date'] + '</small></p>' +
+		result['summary'];
+	
+	var id = "project" + result['id'];
+	console.log(id);
+	$('#'+id + '.details').html(projectHTML);
+	
+ }
+ 
+  function addColor(result){
+	console.log(result['colors']);
+	var colors = result['colors'].hex;
+	
+	$('body').css('background-color', colors[0]);
+	$('.thumbnail').css('background-color', colors[1]);
+	$('h1, h2, h3, h4, h5, h5').css('color', colors[2]);
+	$('p').css('color', colors[3]);
+	$('.project img').css('opacity', .75);
+	
+	
+	
+	}
